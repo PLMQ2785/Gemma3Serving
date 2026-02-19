@@ -59,7 +59,7 @@ ds = ds.map(preprocess_fn, remove_columns=ds.column_names)
 
 recipe = QuantizationModifier(
     targets="Linear",
-    scheme="FP8-DYNAMIC",
+    scheme="FP8_DYNAMIC",
     ignore=[
         "lm_head",
         r"re:.*vision_model.*",       # 비전 타워 레이어 제외 (KeyError 방지)
