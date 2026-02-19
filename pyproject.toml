@@ -15,12 +15,16 @@ dependencies = [
     "oneshot>=0.2.0",
     "lm-eval>=0.4.11",
     "transformers==4.57.1",
+    "flash-attn>=2.8.3",
 ]
 
 [[tool.uv.index]]
 name = "pytorch-cu130"
 url = "https://download.pytorch.org/whl/cu130"
 explicit = true
+
+[tool.uv.extra-build-dependencies]
+flash-attn = ["torch"]
 
 [tool.uv.sources]
 torch = { index = "pytorch-cu130" }
