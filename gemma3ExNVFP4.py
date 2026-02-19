@@ -78,7 +78,7 @@ oneshot(
     tokenizer=tokenizer,
     max_seq_length=MAX_SEQUENCE_LENGTH,
     num_calibration_samples=NUM_CALIBRATION_SAMPLES,
-    batch_size=1,
+    batch_size=4,
     # output_dir=OUTPUT_DIR,
 )
 
