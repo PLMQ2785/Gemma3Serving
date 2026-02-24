@@ -35,7 +35,7 @@ CUDA_VISIBLE_DEVICES=$GPU_ID nohup uv run python -m vllm.entrypoints.openai.api_
         --model ./gemma-3-27b-it-NVFP4 \
         --quantization compressed-tensors \
         --dtype bfloat16 \
-        --max-model-len 8192 \
+        --max-model-len 4096 \
         --gpu-memory-utilization 0.9 \
         --trust-remote-code \
         --port $PORT > $LOG_FILE 2>&1 &
