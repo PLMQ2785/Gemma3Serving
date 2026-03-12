@@ -70,7 +70,7 @@ recipe = GPTQModifier(
     targets="Linear",
     scheme="W4A16",
     actorder="weight",  # activation ordering으로 품질 향상
-    dampening_frac=0.01,  # Hessian 안정화 (기본값 유지)
+    # dampening_frac=0.01,  # Hessian 안정화 (기본값 유지)
     ignore=[
         "lm_head",
         r"re:.*vision_model.*",  # 비전 타워 레이어 제외 (KeyError 방지)
