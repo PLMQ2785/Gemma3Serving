@@ -11,7 +11,7 @@ from llmcompressor import oneshot
 from llmcompressor.modifiers.quantization import GPTQModifier, QuantizationModifier
 from transformers import (
     AutoProcessor,
-    Exaone4ForConditionalGeneration,
+    Exaone4ForCausalLM,
     Gemma3ForConditionalGeneration,
 )
 
