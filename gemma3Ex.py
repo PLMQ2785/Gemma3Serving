@@ -16,8 +16,8 @@ from transformers import AutoProcessor, Gemma3ForConditionalGeneration
 # ──────────────────────────────────────────────
 MODEL_ID = "google/gemma-3-27b-it"
 OUTPUT_DIR = "./gemma-3-27b-it-W4A16"
-NUM_CALIBRATION_SAMPLES = 512
-MAX_SEQUENCE_LENGTH = 1024
+NUM_CALIBRATION_SAMPLES = 1024
+MAX_SEQUENCE_LENGTH = 2048
 
 # 1. 출력 디렉토리 초기화
 if os.path.exists(OUTPUT_DIR):
@@ -31,7 +31,7 @@ with load_offloaded_model():
         device_map="auto_offload",
         torch_dtype=torch.bfloat16,
         trust_remote_code=True,
-        max_memory={"cpu": 14 * 1024**3},
+        # max_memory={"cpu": 14 * 1024**3},
         offload_folder="./offload",
     )
 processor = AutoProcessor.from_pretrained(MODEL_ID, trust_remote_code=True)
@@ -69,6 +69,8 @@ ds = ds.map(preprocess_fn, remove_columns=ds.column_names)
 recipe = GPTQModifier(
     targets="Linear",
     scheme="W4A16",
+    actorder="weight",  # activation ordering으로 품질 향상
+    dampening_frac=0.01,  # Hessian 안정화 (기본값 유지)
     ignore=[
         "lm_head",
         r"re:.*vision_model.*",  # 비전 타워 레이어 제외 (KeyError 방지)
