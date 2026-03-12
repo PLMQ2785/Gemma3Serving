@@ -1,20 +1,23 @@
 import os
+
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
-import torch
 import shutil
-from transformers import AutoProcessor, Gemma3ForConditionalGeneration
-from llmcompressor.modifiers.quantization import QuantizationModifier, GPTQModifier
-from llmcompressor import oneshot
+
+import torch
+from compressed_tensors.offload import load_offloaded_model
 from datasets import load_dataset
+from llmcompressor import oneshot
+from llmcompressor.modifiers.quantization import GPTQModifier, QuantizationModifier
+from transformers import AutoProcessor, Gemma3ForConditionalGeneration
 
 # ──────────────────────────────────────────────
 # 설정 (H200 및 범용 최적화)
 # ──────────────────────────────────────────────
 MODEL_ID = "google/gemma-3-27b-it"
 OUTPUT_DIR = "./gemma-3-27b-it-W4A16"
-NUM_CALIBRATION_SAMPLES = 64
-MAX_SEQUENCE_LENGTH = 128
+NUM_CALIBRATION_SAMPLES = 512
+MAX_SEQUENCE_LENGTH = 1024
 
 # 1. 출력 디렉토리 초기화
 if os.path.exists(OUTPUT_DIR):
@@ -22,12 +25,15 @@ if os.path.exists(OUTPUT_DIR):
 
 # 2. 모델 및 프로세서 로드
 print(f"Loading model: {MODEL_ID}...")
-model = Gemma3ForConditionalGeneration.from_pretrained(
-    MODEL_ID, 
-    device_map="cpu", 
-    torch_dtype=torch.bfloat16, 
-    trust_remote_code=True
-)
+with load_offloaded_model():
+    model = Gemma3ForConditionalGeneration.from_pretrained(
+        MODEL_ID,
+        device_map="auto_offload",
+        torch_dtype=torch.bfloat16,
+        trust_remote_code=True,
+        max_memory={"cpu": 14 * 1024**3},
+        offload_folder="./offload",
+    )
 processor = AutoProcessor.from_pretrained(MODEL_ID, trust_remote_code=True)
 tokenizer = processor.tokenizer
 
@@ -36,6 +42,7 @@ print("Preprocessing dataset...")
 ds = load_dataset("HuggingFaceH4/ultrachat_200k", split="train_sft")
 ds = ds.shuffle(seed=42).select(range(NUM_CALIBRATION_SAMPLES))
 
+
 def preprocess_fn(example):
     return {
         "text": tokenizer.apply_chat_template(
@@ -43,13 +50,14 @@ def preprocess_fn(example):
         )
     }
 
+
 ds = ds.map(preprocess_fn, remove_columns=ds.column_names)
 
 # 4. W4A16 레시피 설정 (비전 타워 보호 필히 포함)
 # H200에서 안정적인 GPTQ 스타일의 W4A16을 적용합니다.
 # recipe = QuantizationModifier(
 #     targets="Linear",
-#     scheme="W4A16", 
+#     scheme="W4A16",
 #     ignore=[
 #         "lm_head",
 #         r"re:.*vision_model.*",       # 비전 타워 레이어 제외 (KeyError 방지)
@@ -63,9 +71,9 @@ recipe = GPTQModifier(
     scheme="W4A16",
     ignore=[
         "lm_head",
-        r"re:.*vision_model.*",       # 비전 타워 레이어 제외 (KeyError 방지)
-        r"re:.*multi_modal_projector.*", # 멀티모달 커넥터 제외
-        r"re:.*connector.*"
+        r"re:.*vision_model.*",  # 비전 타워 레이어 제외 (KeyError 방지)
+        r"re:.*multi_modal_projector.*",  # 멀티모달 커넥터 제외
+        r"re:.*connector.*",
     ],
 )
 
@@ -79,6 +87,7 @@ oneshot(
     tokenizer=tokenizer,
     max_seq_length=MAX_SEQUENCE_LENGTH,
     num_calibration_samples=NUM_CALIBRATION_SAMPLES,
+    pipeline="sequential",
     # output_dir=OUTPUT_DIR,
 )
 
