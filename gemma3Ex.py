@@ -16,7 +16,7 @@ from transformers import AutoProcessor, Gemma3ForConditionalGeneration
 # ──────────────────────────────────────────────
 MODEL_ID = "google/gemma-3-27b-it"
 OUTPUT_DIR = "./gemma-3-27b-it-W4A16"
-NUM_CALIBRATION_SAMPLES = 1024
+NUM_CALIBRATION_SAMPLES = 512
 MAX_SEQUENCE_LENGTH = 2048
 
 # 1. 출력 디렉토리 초기화
