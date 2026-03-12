@@ -18,8 +18,8 @@ from transformers import (
 # ──────────────────────────────────────────────
 # 설정 (H200 및 범용 최적화)
 # ──────────────────────────────────────────────
-MODEL_ID = "google/gemma-3-27b-it"
-OUTPUT_DIR = "./gemma-3-27b-it-W4A16"
+MODEL_ID = "LGAI/EXAONE-4.0.1-32B"
+OUTPUT_DIR = "./exaone-4.0.1-32B-W4A16"
 NUM_CALIBRATION_SAMPLES = 512
 MAX_SEQUENCE_LENGTH = 2048
 
