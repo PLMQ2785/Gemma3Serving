@@ -15,6 +15,7 @@ dependencies = [
     "oneshot>=0.2.0",
     "lm-eval>=0.4.11",
     "transformers==4.57.1",
+    "ninja>=1.13.0",
 ]
 
 [[tool.uv.index]]

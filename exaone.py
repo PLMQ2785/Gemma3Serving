@@ -3,7 +3,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 import torch
 import shutil
-from transformers import AutoProcessor, Gemma3ForConditionalGeneration
+from transformers import AutoProcessor, Gemma3ForConditionalGeneration, Exaone4ForCasualLM
 from llmcompressor.modifiers.quantization import QuantizationModifier, GPTQModifier
 from llmcompressor import oneshot
 from datasets import load_dataset
@@ -11,8 +11,8 @@ from datasets import load_dataset
 # ──────────────────────────────────────────────
 # 설정 (H200 및 범용 최적화)
 # ──────────────────────────────────────────────
-MODEL_ID = "google/gemma-3-27b-it"
-OUTPUT_DIR = "./gemma-3-27b-it-W4A16"
+MODEL_ID = "LGAI/EXAONE-4.0.1-32B"
+OUTPUT_DIR = "./EXAONE-4.0.1-32B-W4A16"
 NUM_CALIBRATION_SAMPLES = 64
 MAX_SEQUENCE_LENGTH = 128
 
@@ -22,7 +22,7 @@ if os.path.exists(OUTPUT_DIR):
 
 # 2. 모델 및 프로세서 로드
 print(f"Loading model: {MODEL_ID}...")
-model = Gemma3ForConditionalGeneration.from_pretrained(
+model = Exaone4ForCasualLM.from_pretrained(
     MODEL_ID, 
     device_map="cpu", 
     torch_dtype=torch.bfloat16, 
@@ -63,9 +63,9 @@ recipe = GPTQModifier(
     scheme="W4A16",
     ignore=[
         "lm_head",
-        r"re:.*vision_model.*",       # 비전 타워 레이어 제외 (KeyError 방지)
-        r"re:.*multi_modal_projector.*", # 멀티모달 커넥터 제외
-        r"re:.*connector.*"
+       # r"re:.*vision_model.*",       # 비전 타워 레이어 제외 (KeyError 방지)
+       # r"re:.*multi_modal_projector.*", # 멀티모달 커넥터 제외
+       # r"re:.*connector.*"
     ],
 )
 
