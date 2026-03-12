@@ -30,7 +30,7 @@ if os.path.exists(OUTPUT_DIR):
 # 2. 모델 및 프로세서 로드
 print(f"Loading model: {MODEL_ID}...")
 with load_offloaded_model():
-    model = Exaone4ForConditionalGeneration.from_pretrained(
+    model = Exaone4ForCausalLM.from_pretrained(
         MODEL_ID,
         device_map="auto_offload",
         torch_dtype=torch.bfloat16,
