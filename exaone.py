@@ -11,6 +11,7 @@ from llmcompressor import oneshot
 from llmcompressor.modifiers.quantization import GPTQModifier, QuantizationModifier
 from transformers import (
     AutoProcessor,
+    AutoTokenizer,
     Exaone4ForCausalLM,
     Gemma3ForConditionalGeneration,
 )
@@ -38,8 +39,7 @@ with load_offloaded_model():
         # max_memory={"cpu": 14 * 1024**3},
         offload_folder="./offload",
     )
-processor = AutoProcessor.from_pretrained(MODEL_ID, trust_remote_code=True)
-tokenizer = processor.tokenizer
+tokenizer = AutoTokenizer.from_pretrained(MODEL_ID, trust_remote_code=True)
 
 # 3. 데이터셋 전처리 (Gemma 3 멀티모달 템플릿 적용)
 print("Preprocessing dataset...")
