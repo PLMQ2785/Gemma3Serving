@@ -1,7 +1,7 @@
 [project]
-name = "gemma3serving"
+name = "Quantize"
 version = "0.1.0"
-description = "Add your description here"
+description = "Model Quantize"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
@@ -13,9 +13,11 @@ dependencies = [
     "numpy",
     "llmcompressor",
     "lm-eval",
-    "transformers",
+    "transformers==4.57.1",
     "ninja>=1.13.0",
     "compressed-tensors",
+    "datasets",
+    "psutil"
 ]
 
 [[tool.uv.index]]

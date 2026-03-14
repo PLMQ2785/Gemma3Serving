@@ -90,12 +90,12 @@ oneshot(
     max_seq_length=MAX_SEQUENCE_LENGTH,
     num_calibration_samples=NUM_CALIBRATION_SAMPLES,
     pipeline="sequential",
-    # output_dir=OUTPUT_DIR,
+    output_dir=OUTPUT_DIR,
 )
 
 # 6. 압축 저장
 print("Saving compressed model...")
-model.save_pretrained(OUTPUT_DIR, save_compressed=True)
+# model.save_pretrained(OUTPUT_DIR, save_compressed=True)
 processor.save_pretrained(OUTPUT_DIR)
 
 print(f"✅ W4A16 양자화 완료: {OUTPUT_DIR}")
