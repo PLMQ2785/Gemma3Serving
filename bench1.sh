@@ -8,7 +8,7 @@ set -e
 
 MODEL_NAME=${1:?"❌ Usage: $0 <model_name> <model_path> [port]"}
 MODEL_PATH=${2:?"❌ Usage: $0 <model_name> <model_path> [port]"}
-PORT=${2:-8001}
+PORT=${3:-8001}
 BASE_URL="http://localhost:${PORT}/v1/completions"
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 RESULT_DIR="$(cd "$(dirname "$0")/.." && pwd)/results/lm-eval/${MODEL_NAME}/${TIMESTAMP}"
