@@ -1,12 +1,19 @@
 import os
+
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
-import torch
 import shutil
-from transformers import AutoProcessor, Gemma3ForConditionalGeneration, Exaone4ForCasualLM
-from llmcompressor.modifiers.quantization import QuantizationModifier, GPTQModifier
-from llmcompressor import oneshot
+
+import torch
 from datasets import load_dataset
+from llmcompressor import oneshot
+from llmcompressor.modifiers.quantization import GPTQModifier, QuantizationModifier
+from transformers import (
+    AutoProcessor,
+    AutoTokenizer,
+    Exaone4ForCasualLM,
+    Gemma3ForConditionalGeneration,
+)
 
 # ──────────────────────────────────────────────
 # 설정 (H200 및 범용 최적화)
@@ -23,18 +30,16 @@ if os.path.exists(OUTPUT_DIR):
 # 2. 모델 및 프로세서 로드
 print(f"Loading model: {MODEL_ID}...")
 model = Exaone4ForCasualLM.from_pretrained(
-    MODEL_ID, 
-    device_map="cpu", 
-    torch_dtype=torch.bfloat16, 
-    trust_remote_code=True
+    MODEL_ID, device_map="cpu", torch_dtype=torch.bfloat16, trust_remote_code=True
 )
-processor = AutoProcessor.from_pretrained(MODEL_ID, trust_remote_code=True)
-tokenizer = processor.tokenizer
+# processor = AutoProcessor.from_pretrained(MODEL_ID, trust_remote_code=True)
+tokenizer = AutoTokenizer.from_pretrained(MODEL_ID, trust_remote_code=True)
 
 # 3. 데이터셋 전처리 (Gemma 3 멀티모달 템플릿 적용)
 print("Preprocessing dataset...")
 ds = load_dataset("HuggingFaceH4/ultrachat_200k", split="train_sft")
 ds = ds.shuffle(seed=42).select(range(NUM_CALIBRATION_SAMPLES))
+
 
 def preprocess_fn(example):
     return {
@@ -43,13 +48,14 @@ def preprocess_fn(example):
         )
     }
 
+
 ds = ds.map(preprocess_fn, remove_columns=ds.column_names)
 
 # 4. W4A16 레시피 설정 (비전 타워 보호 필히 포함)
 # H200에서 안정적인 GPTQ 스타일의 W4A16을 적용합니다.
 # recipe = QuantizationModifier(
 #     targets="Linear",
-#     scheme="W4A16", 
+#     scheme="W4A16",
 #     ignore=[
 #         "lm_head",
 #         r"re:.*vision_model.*",       # 비전 타워 레이어 제외 (KeyError 방지)
@@ -63,9 +69,9 @@ recipe = GPTQModifier(
     scheme="W4A16",
     ignore=[
         "lm_head",
-       # r"re:.*vision_model.*",       # 비전 타워 레이어 제외 (KeyError 방지)
-       # r"re:.*multi_modal_projector.*", # 멀티모달 커넥터 제외
-       # r"re:.*connector.*"
+        # r"re:.*vision_model.*",       # 비전 타워 레이어 제외 (KeyError 방지)
+        # r"re:.*multi_modal_projector.*", # 멀티모달 커넥터 제외
+        # r"re:.*connector.*"
     ],
 )
 
