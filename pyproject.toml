@@ -14,7 +14,7 @@ dependencies = [
     "lm-eval>=0.4.11",
     "transformers==4.57.1",
     "ninja>=1.13.0",
-    "opencompass"
+   # "opencompass==0.5.2"
 ]
 
 [[tool.uv.index]]
