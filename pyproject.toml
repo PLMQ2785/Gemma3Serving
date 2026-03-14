@@ -1,7 +1,7 @@
 [project]
-name = "Serving"
+name = "Bench-Opencompass"
 version = "0.1.0"
-description = "Model Serving"
+description = "Model Bench"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
@@ -10,10 +10,10 @@ dependencies = [
     "torchvision",
     "torchaudio",
     "numpy",
-    "vllm==0.17.1",
-    "lm-eval>=0.4.11",
+    #"vllm==0.17.1",
+    #"lm-eval>=0.4.11",
     "transformers==4.57.1",
-    "ninja>=1.13.0",
+    #"ninja>=1.13.0",
     "opencompass"
 ]
 
