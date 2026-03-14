@@ -1,7 +1,7 @@
 [project]
-name = "gemma3serving"
+name = "Serving"
 version = "0.1.0"
-description = "Add your description here"
+description = "Model Serving"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
@@ -10,20 +10,19 @@ dependencies = [
     "torchvision",
     "torchaudio",
     "numpy",
-    "vllm==0.15.1",
-    "llmcompressor>=0.9.0.1",
-    "oneshot>=0.2.0",
+    "vllm==0.17.1",
     "lm-eval>=0.4.11",
     "transformers==4.57.1",
     "ninja>=1.13.0",
+    "opencompass"
 ]
 
 [[tool.uv.index]]
-name = "pytorch-cu130"
-url = "https://download.pytorch.org/whl/cu130"
+name = "pytorch-cu128"
+url = "https://download.pytorch.org/whl/cu128"
 explicit = true
 
 [tool.uv.sources]
-torch = { index = "pytorch-cu130" }
-torchvision = { index = "pytorch-cu130" }
-torchaudio = { index = "pytorch-cu130" }
+torch = { index = "pytorch-cu128" }
+torchvision = { index = "pytorch-cu128" }
+torchaudio = { index = "pytorch-cu128" }
